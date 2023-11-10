@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EditorJS Math Example</title>
+</head>
+<body class="container">
+<h1 align="center">EditorJS Block ShortCurs</h1>
+<p align="center">Follow the README.md for instructions</p>
+<div id="editorjs"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@latest/dist/editor.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/paragraph@latest"></script><!-- Header -->
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/header@latest"></script><!-- Header -->
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/simple-image@latest"></script><!-- Image -->
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/delimiter@latest"></script><!-- Delimiter -->
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/nested-list@latest"></script><!-- List -->
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/checklist@latest"></script><!-- Checklist -->
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/quote@latest"></script><!-- Quote -->
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/code@latest"></script><!-- Code -->
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/embed@latest"></script><!-- Embed -->
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/table@latest"></script><!-- Table -->
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/link@latest"></script><!-- Link -->
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/warning@latest"></script><!-- Warning -->
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/raw@latest"></script><!-- Raw -->
+
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/marker@latest"></script><!-- Marker -->
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/inline-code@latest"></script><!-- Inline Code -->
+<script src="https://cdn.jsdelivr.net/npm/editorjs-undo"></script>
+
+<script type="module">
+    import { BlockShortcuts } from "../src/block-shortcut"
+    import { editorJsBlockShortcuts } from "./editorJsBlockShortcuts"
+
+    const editor = new EditorJS({
+        holder: 'editorjs',
+        tools: {
+            paragraph: {
+                class: Paragraph,
+                inlineToolbar: true,
+            },
+            header: {
+                class: Header,
+                inlineToolbar: ['italic']
+            },
+            list: NestedList,
+            checklist: {
+                class: Checklist,
+                inlineToolbar: true,
+            },
+            quote: Quote,
+            delimeter: Delimiter,
+            code: CodeTool,
+            table: Table
+        },
+        onReady: () => {
+            new BlockShortcuts({
+                editor,
+                blockConverters: editorJsBlockShortcuts,
+            })
+            new Undo({ editor });
+        },
+        data: {
+            'time': 1602919875295,
+            'blocks': [
+                {
+                    'type': 'paragraph',
+                    'data': {
+                        'text': [
+                            '<b>-</b> or <b>*</b> - unordered list',
+                            '<b>1.</b> - ordered list',
+                            '<b>#1, #2 ... #6</b> - header',
+                            '<b>&lt; &gt;</b> - code block',
+                            '<b>|</b> - quote',
+                            '<b>|||</b> - table',
+                            '<b>***</b> - delimeter',
+                        ].join('<br/>')
+                    }
+                }
+            ],
+            'version': '2.19.0'
+        }
+    })
+</script>
+</body>
+</html>
