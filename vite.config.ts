@@ -10,7 +10,7 @@ export default defineConfig({
     build: {
         copyPublicDir: false,
         lib: {
-            entry: path.resolve(__dirname, 'src', 'block-shortcut.ts'),
+            entry: path.resolve(__dirname, 'src', 'block-shortcuts.ts'),
             name: 'BlockShortcut',
             fileName: 'block-shortcut',
         },

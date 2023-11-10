@@ -12,9 +12,8 @@ type NewBlock = {
 
 type BlockConverter = (
     shortcutText: string,
-    blockType: string,
-    blockText: string,
-    blockData: SavedData | void,
+    oldBlockType: string,
+    oldBlockData: SavedData | void,
 ) => NewBlock
 
 type BlockTypeComparator = (
@@ -26,8 +25,8 @@ type BlockTypeComparator = (
 
 export type BlockConverterInfo = {
     shortcuts: (string | RegExp)[]
-    enabledFor?: string[]
     converter: BlockConverter
+    enabledFor?: string[]
     blockTypeComparator?: BlockTypeComparator
 }
 
@@ -90,8 +89,7 @@ export class BlockShortcuts {
                         const newBlock = converterInfo.converter(
                             shortcutText,
                             block.name,
-                            document.activeElement.innerHTML,
-                            oldBlockData
+                            oldBlockData,
                         )
 
                         const comparator = converterInfo.blockTypeComparator || this.defaultBlockTypeComparator

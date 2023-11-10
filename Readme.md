@@ -1,99 +1,203 @@
-![](https://badgen.net/badge/Editor.js/v2.0/blue)
+# EditorJS Block Shortcuts
 
-# Block shortcut feature for Editor.js (like in Notion)
-
-Basic text Tool for the [Editor.js](https://ifmo.su/editor).
+Block shortcut feature for Editor.js (like in Notion)
 
 ## Installation
 
-Get the package
+Insall the package
 
 ```shell
 npm install editorjs-block-shortcut
 ```
-## Usage
 
-To convert some block
+## Usage
 
 Minimal configuration:
 
-```javascript
-import BlockShortcuts from 'editorjs-block-shortcut';
-const Header = require('@editorjs/header');
+```typescript
+import { BlockShortcuts } from 'editorjs-block-shortcut'
+import Header from '@editorjs/header'
 
-const blockConverters = {
-    shortcut: '#',
-    converter: (text) => ({
-        type: 'header',
-        data: {
-            text: '',
-            level: 1,
-        },
-        config: null,
-    }),
-}
+const blockConverters = [
+    {
+        shortcut: ['#'],
+        converter: (shortcutText) => ({
+            type: 'header',
+            data: {
+                text: '',
+                level: 1,
+            },
+            config: null,
+        }),
+    }
+]
 
 const editor = new EditorJS({
     tools: {
         header: Header,
     },
     onReady: () => {
-        new BlockShortcuts({ editor });
+        new BlockShortcuts({ editor })
     },
 });
 ```
 
-If a user input '#' and press space in 
+If a user input '#' and press "Space" in the beginning some block it will be converted to the header block.
 
-### Ex
+### Multiple shortcuts
 
-```javascript
-import BlockShortcuts from 'editorjs-block-shortcut';
-const Header = require('@editorjs/header');
+You can specify multiple shortcuts:
 
-const blockConverters = {
-    shortcut: /[#]{1,6}}/,
-        converter: (text) => ({
-    type: 'header',
-    data: {
-        text: ,
-        level: text.length,
-    },
-    config: null,
-},
-}
+```typescript
+import { BlockShortcuts } from 'editorjs-block-shortcut'
+import Header from '@editorjs/header'
 
-const editor = new EditorJS({
-    tools: {
-        header: Header,
+const blockConverters = [
+    {
+        shortcuts: ['-', '*'],
+        converter: (shortcutText) => ({
+            type: 'list',
+            data: {
+                style: 'unordered',
+                items: [],
+            },
+            config: null,
+        }),
     }
-    onReady: () => {
-        new BlockShortcuts({ editor });
-    },
-});
+]
+```
+
+### Regex shortcuts
+
+The plugin also allows you to validate shortcuts using regular expressions. This can be useful, for example, 
+in blocks with different variations. Let's look at an example with headers:
+
+```typescript
+import { BlockShortcuts } from 'editorjs-block-shortcut'
+import Header from '@editorjs/header'
+
+const blockConverters = [
+    {
+        shortcut: [/[#]{1,6}}/],
+        converter: (shortcutText) => ({
+            type: 'header',
+            data: {
+                text: '',
+                level: shortcutText.length,
+            },
+            config: null,
+        })
+    }
+]
+```
+
+Now, when you enter # or ##, the block will be converted to block H1 or H2, respectively.
+
+### Retrieving data from an old block
+
+Sometimes it is necessary not only to convert one block into another, 
+but also to preserve the data from the original block. Below is an example of how to do this:
+
+```typescript
+import { SavedData } from '@editorjs/editorjs/types/data-formats'
+import { BlockShortcuts } from 'editorjs-block-shortcut'
+import Header from '@editorjs/header'
+
+const blockConverters = [
+    {
+        shortcut: [/[#]{1,6}}/],
+        converter: (
+            shortcutText: string,
+            oldBlockType: string,
+            oldBlockData: SavedData | void,
+        ) => ({
+            type: 'header',
+            data: {
+                text: (oldBlockData as SavedData).data.text,
+                level: shortcutText.length,
+            },
+            config: null,
+        })
+    }
+]
+```
+
+
+### Enabling converting only for specific blocks
+
+You can specify that the converter only works for certain blocks using the xxx option:
+
+```typescript
+import { BlockShortcuts } from 'editorjs-block-shortcut'
+import Header from '@editorjs/header'
+
+const blockConverters = [
+    {
+        shortcut: [/[#]{1,6}}/],
+        enabledFor: ['paragraph'],
+        converter: (shortcutText) => ({
+            type: 'header',
+            data: {
+                text: '',
+                level: shortcutText.length,
+            },
+            config: null,
+        })
+    }
+]
+```
+
+By default, converters apply to all block types.
+
+### Comparing blocks
+
+Notion allows us to convert one heading level to another, but with the default configuration of the converter 
+this will not be possible. By default, the library compares the old and new block by type, and if the types are the same, 
+then the conversion will not occur.
+
+To correct this behavior, you can specify your own block comparison function, which, in addition to the type, 
+also compares the header level:
+
+```typescript
+import { SavedData } from '@editorjs/editorjs/types/data-formats'
+import { BlockShortcuts } from 'editorjs-block-shortcut'
+import Header from '@editorjs/header'
+
+const blockConverters = [
+    {
+        shortcut: [/[#]{1,6}}/],
+        enabledFor: ['paragraph', 'header'],
+        blockTypeComparator: (
+            newBlockType: string,
+            oldBlockType: string,
+            oldBlockData: BlockToolData,
+            newBlockData: BlockToolData,
+        ) => {
+            return newBlockType != oldBlockType || oldBlockData.level != newBlockData.level
+        },
+        converter: (
+            shortcutText: string,
+            oldBlockType: string,
+            oldBlockData: SavedData | void,
+        ) => ({
+            type: 'header',
+            data: {
+                text: (oldBlockData as SavedData).data.text,
+                level: shortcutText.length,
+            },
+            config: null,
+        })
+    }
+]
 ```
 
 ## Config Params
 
-The Paragraph Tool supports these configuration parameters:
+Converter config supports the options (* - required option):
 
-| Field | Type     | Description        |
-| ----- | -------- | ------------------ |
-| placeholder | `string` | The placeholder. Will be shown only in the first paragraph when the whole editor is empty.  |
-| preserveBlank | `boolean` | (default: `false`) Whether or not to keep blank paragraphs when saving editor data |
-
-## Output data
-
-| Field  | Type     | Description      |
-| ------ | -------- | ---------------- |
-| text   | `string` | paragraph's text |
-
-
-```json
-{
-    "type" : "paragraph",
-    "data" : {
-        "text" : "Check out our projects on a <a href=\"https://github.com/codex-team\">GitHub page</a>.",
-    }
-}
-```
+| Field               | Type     | Description        |
+|---------------------|----------| ------------------ |
+| shortcuts *         | <code>(string &#124; RegExp)[]</code> | |
+| converter *         | `BlockConverter` | |
+| enabledFor          | `string[]` | |
+| blockTypeComparator | `BlockTypeComparator` | |

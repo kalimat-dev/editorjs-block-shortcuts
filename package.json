@@ -1,13 +1,13 @@
 {
   "name": "editorjs-block-shortcut",
-  "version": "1.0.5",
+  "version": "1.0.7",
   "description": "Shortcuts for blocks like in Notion",
   "files": [
     "dist"
   ],
-  "main": "./dist/block-shortcut.umd.js",
-  "module": "./dist/block-shortcut.mjs",
-  "typings": "./dist/block-shortcut.d.ts",
+  "main": "./dist/block-shortcuts.umd.js",
+  "module": "./dist/block-shortcuts.mjs",
+  "typings": "./dist/block-shortcuts.d.ts",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kalimat-dev/editorjs-block-shortcut.git"
+    "url": "git+https://github.com/kalimat-dev/editorjs-block-shortcuts.git"
   },
   "keywords": [
     "editorjs",

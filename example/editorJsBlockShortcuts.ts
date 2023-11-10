@@ -1,6 +1,6 @@
 import { SavedData } from '@editorjs/editorjs/types/data-formats'
 import { BlockToolData } from '@editorjs/editorjs/types/tools'
-import { BlockConverterInfo } from '../src/block-shortcut'
+import { BlockConverterInfo } from '../src/block-shortcuts'
 
 export const editorJsBlockShortcuts: BlockConverterInfo[] = [
     {
@@ -8,15 +8,15 @@ export const editorJsBlockShortcuts: BlockConverterInfo[] = [
         enabledFor: ['paragraph', 'checklist'],
         converter: (
             shortcutText: string,
-            blockType: string,
-            blockText: string,
-            blockData: SavedData,
+            olBlockType: string,
+            olBlockText: string,
+            olBlockData: SavedData,
         ) => {
             let items
-            if (blockType == 'checklist') {
-                items = blockData.data.items.map(item => ({ content: item.text }))
+            if (olBlockType == 'checklist') {
+                items = olBlockData.data.items.map(item => ({ content: item.text }))
             } else {
-                items = [{ content: blockText, items: [] }]
+                items = [{ content: olBlockData.data.text, items: [] }]
             }
             return {
                 type: 'list',
@@ -45,23 +45,22 @@ export const editorJsBlockShortcuts: BlockConverterInfo[] = [
         enabledFor: ['paragraph', 'list'],
         converter: (
             shortcutText: string,
-            blockType: string,
-            blockText: string,
-            blockData: SavedData,
+            oldBlockType: string,
+            oldBlockData: SavedData,
         ) => {
             let items
-            if (blockType == 'list') {
+            if (oldBlockType == 'list') {
                 const getChildText = (items) => {
                     if (!items) {
                         return ''
                     }
                     return items.map(item => item.content + getChildText(item.items)).join(' ')
                 }
-                items = blockData.data.items.map(item => ({
+                items = oldBlockData.data.items.map(item => ({
                     text: `${item.content} ${getChildText(item.items)}`
                 }))
             } else {
-                items = [{ text: blockData.data.text }]
+                items = [{ text: oldBlockData.data.text }]
             }
             return {
                 type: 'checklist',
@@ -86,13 +85,12 @@ export const editorJsBlockShortcuts: BlockConverterInfo[] = [
         },
         converter: (
             shortcutText: string,
-            blockType: string,
-            blockText: string,
-            blockData: SavedData,
+            oldBlockType: string,
+            oldBlockData: SavedData,
         ) => ({
             type: 'header',
             data: {
-                text: blockData.data.text,
+                text: oldBlockData.data.text,
                 level: shortcutText.length,
             },
             config: null,
@@ -132,10 +130,14 @@ export const editorJsBlockShortcuts: BlockConverterInfo[] = [
     {
         shortcuts: ['|||'],
         enabledFor: ['paragraph'],
-        converter: () => ({
+        converter: (
+            shortcutText: string,
+            oldBlockType: string,
+            oldBlockData: SavedData,
+        ) => ({
             type: 'table',
             data: {
-                text: ''
+                "content" : [ [oldBlockData.data.text, '', ''] ],
             },
             config: null,
         }),
