@@ -1,7 +1,7 @@
 name: Publish package to NPM
 
 on:
-  push:
+  workflow_dispatch:
     branches:
       - master
 
@@ -15,7 +15,7 @@ jobs:
           node-version: 19
           registry-url: https://registry.npmjs.org/
       - run: npm install
-      - run: yarn build
-      - run: yarn publish --access=example
+      - run: npm build
+      - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
